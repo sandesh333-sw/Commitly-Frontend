@@ -4,6 +4,7 @@ import { useAuth } from "../../../authUtils";
 import axios from "axios";
 import "./auth.css";
 import logo from "../../assets/logo.png";
+import config from "../../config";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:3000/user/login", {
+      const response = await axios.post(`${config.apiUrl}/user/login`, {
         email: formData.email,
         password: formData.password
       });

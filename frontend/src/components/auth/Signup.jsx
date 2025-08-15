@@ -4,6 +4,7 @@ import { useAuth } from "../../../authUtils";
 import axios from "axios";
 import "./auth.css";
 import logo from "../../assets/logo.png";
+import config from "../../config";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/user/register", {
+      const response = await axios.post(`${config.apiUrl}/user/register`, {
         username: formData.username,
         email: formData.email,
         password: formData.password
