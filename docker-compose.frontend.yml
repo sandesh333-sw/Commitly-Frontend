@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=${API_URL:-http://localhost:3000}
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge
