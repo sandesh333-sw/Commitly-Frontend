@@ -19,10 +19,6 @@ const RepoDetail = () => {
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [newDescription, setNewDescription] = useState("");
   
-  // Add content state
-  const [newContent, setNewContent] = useState("");
-  const [contentName, setContentName] = useState("README.md");
-  
   // Issues state
   const [issues, setIssues] = useState([]);
   const [newIssue, setNewIssue] = useState({ title: "", description: "" });
@@ -30,7 +26,6 @@ const RepoDetail = () => {
 
   // File management state
   const [selectedFile, setSelectedFile] = useState(null);
-  // Removed unused variable fileRefreshKey
 
   // Fetch repository data
   useEffect(() => {
@@ -110,8 +105,6 @@ const RepoDetail = () => {
       alert("Failed to update repository description");
     }
   };
-
-  // Removed unused function handleAddContent
 
   // Handle repository visibility toggle
   const handleToggleVisibility = async () => {
@@ -195,8 +188,7 @@ const RepoDetail = () => {
 
   // Handle file refresh after save
   const handleFileRefresh = () => {
-    // We're not using fileRefreshKey anymore, but keeping the function
-    // for the onFileSave prop in CodeEditor
+    // Empty function kept for the onFileSave prop in CodeEditor
   };
 
   if (loading) {
