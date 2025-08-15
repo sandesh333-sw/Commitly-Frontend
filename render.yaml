@@ -7,7 +7,7 @@ services:
     staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: https://commitly-backend.onrender.com # Update this with your actual backend URL
+        value: https://backend-commitly.onrender.com # Updated backend URL
     routes:
       - type: rewrite
         source: /*
@@ -17,31 +17,4 @@ services:
         name: Cache-Control
         value: no-cache
   
-  # Backend web service
-  - type: web
-    name: commitly-backend
-    env: node
-    region: oregon # Choose your preferred region
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 3000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: commitly-db
-          property: connectionString
-      - key: JWT_SECRET
-        sync: false # For sensitive values, set sync to false
-    autoDeploy: true
-    healthCheckPath: /api/health
-
-  # Database
-  - type: pserv
-    name: commitly-db
-    env: postgres
-    region: oregon # Choose your preferred region
-    plan: free # Adjust as needed
-    ipAllowList: [] # For added security
+  # Backend web service section removed since you already have a backend deployed
