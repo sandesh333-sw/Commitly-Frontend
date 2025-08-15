@@ -1,35 +1,52 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../authUtils";
 import axios from "axios";
-import { useAuth } from "../../../authContext.jsx";
-import { Link } from "react-router-dom";
 import "./auth.css";
 import logo from "../../assets/logo.png";
-import config from "../../config";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-      setLoading(true);
-      const res = await axios.post(`${config.apiUrl}/login`, {
-        email: email,
-        password: password,
+      const response = await axios.post("http://localhost:3000/user/login", {
+        email: formData.email,
+        password: formData.password
       });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
-
-      setCurrentUser(res.data.userId);
-      window.location.href = "/";
-    } catch (err) {
-      console.error(err);
-      alert("Login Failed!");
+      // Store user data
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userId", response.data.user._id);
+      
+      // Update auth context
+      setCurrentUser(response.data.user._id);
+      
+      // Redirect to dashboard
+      navigate("/");
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(error.response?.data?.error || "Invalid email or password");
+    } finally {
       setLoading(false);
     }
   };
@@ -37,21 +54,24 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="auth-logo-container">
-          <img className="auth-logo" src={logo} alt="Logo" />
+        <div className="auth-logo">
+          <img src={logo} alt="Commitly Logo" />
         </div>
+        <h2>Welcome Back</h2>
         
-        <h2 className="auth-title">Sign in to Commitly</h2>
+        {error && <div className="error-message">{error}</div>}
         
-        <form className="auth-form" onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email address</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               required
+              autoComplete="email"
             />
           </div>
           
@@ -60,25 +80,25 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               required
+              autoComplete="current-password"
             />
           </div>
           
           <button 
-            type="submit"
-            className="auth-button"
+            type="submit" 
+            className="auth-button" 
             disabled={loading}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Logging in..." : "Log In"}
           </button>
         </form>
         
         <div className="auth-footer">
-          <p>
-            New to Commitly? <Link to="/signup">Create an account</Link>
-          </p>
+          Don't have an account? <Link to="/signup">Sign Up</Link>
         </div>
       </div>
     </div>

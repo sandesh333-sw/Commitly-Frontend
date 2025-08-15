@@ -1,71 +1,76 @@
-import React, { useEffect } from "react";
-import { useNavigate, useRoutes, useLocation } from 'react-router-dom';
+import React from 'react';
+import { 
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from 'react-router-dom';
 
-// Pages List
-import Dashboard from "./components/dashboard/Dashboard";
-import Profile from "./components/user/Profile";
-import Login from "./components/auth/Login";
-import Signup from "./components/auth/Signup";
-import CreateRepo from "./components/repo/CreateRepo";
-import RepoDetail from "./components/repo/RepoDetail";
-import IssueDetail from "./components/issue/IssueDetail";
+// Components
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import Dashboard from './components/dashboard/Dashboard';
+import Profile from './components/user/Profile';
+import CreateRepo from './components/repo/CreateRepo';
+import RepoDetail from './components/repo/RepoDetail';
+import IssueDetail from './components/issue/IssueDetail';
+import { useAuth } from "../authUtils";
 
-// Auth Context
-import { useAuth } from "../authContext.jsx";
-
-const ProjectRoutes = () => {
-  const { currentUser, setCurrentUser } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const userIdFromStorage = localStorage.getItem("userId");
-
-    if (userIdFromStorage && !currentUser) {
-      setCurrentUser(userIdFromStorage);
-    }
-
-    if (!userIdFromStorage && !["/auth", "/signup"].includes(location.pathname)) {
-      navigate("/auth");
-    }
-
-    if (userIdFromStorage && location.pathname === '/auth' && currentUser) {
-      navigate("/");
-    }
-  }, [currentUser, navigate, setCurrentUser, location.pathname]);
-
-  let element = useRoutes([
-    {
-      path: "/",
-      element: <Dashboard />
-    },
-    {
-      path: "/auth",
-      element: <Login />
-    },
-    {
-      path: "/signup",
-      element: <Signup />
-    },
-    {
-      path: "/profile",
-      element: <Profile />
-    },
-    {
-      path: "/create",
-      element: <CreateRepo />
-    },
-    {
-      path: "/repo/:id",
-      element: <RepoDetail />
-    },
-    {
-      path: "/issue/:id",
-      element: <IssueDetail />
-    }
-  ]);
-
-  return element;
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const { currentUser } = useAuth();
+  
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
 };
 
-export default ProjectRoutes;
+const AppRoutes = () => {
+  return (
+    <Router>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        
+        {/* Protected routes */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/create-repo" element={
+          <ProtectedRoute>
+            <CreateRepo />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/repo/:id" element={
+          <ProtectedRoute>
+            <RepoDetail />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/issue/:id" element={
+          <ProtectedRoute>
+            <IssueDetail />
+          </ProtectedRoute>
+        } />
+        
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default AppRoutes;

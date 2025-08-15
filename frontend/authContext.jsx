@@ -1,12 +1,7 @@
-import React, {createContext, useState, useEffect, useContext} from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
-
-const AuthContext = createContext();
-
-export const useAuth = () => {
-    return useContext(AuthContext);
-}
-
+// Export the context so it can be imported in authUtils.js
+export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
     const [currentUser, setCurrentUser] = useState(null);

@@ -30,7 +30,7 @@ const RepoDetail = () => {
 
   // File management state
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileRefreshKey, setFileRefreshKey] = useState(0);
+  // Removed unused variable fileRefreshKey
 
   // Fetch repository data
   useEffect(() => {
@@ -111,36 +111,7 @@ const RepoDetail = () => {
     }
   };
 
-  // Handle repository content addition
-  const handleAddContent = async () => {
-    if (!newContent.trim()) {
-      alert("Content cannot be empty");
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.put(
-        `http://localhost:3000/repo/update/${id}`,
-        { 
-          content: `${contentName}:\n${newContent}` 
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      // Update local state
-      setRepo(response.data.repository);
-      setNewContent("");
-      setContentName("README.md");
-    } catch (error) {
-      console.error("Error adding content:", error);
-      alert("Failed to add content to repository");
-    }
-  };
+  // Removed unused function handleAddContent
 
   // Handle repository visibility toggle
   const handleToggleVisibility = async () => {
@@ -224,7 +195,8 @@ const RepoDetail = () => {
 
   // Handle file refresh after save
   const handleFileRefresh = () => {
-    setFileRefreshKey(prev => prev + 1);
+    // We're not using fileRefreshKey anymore, but keeping the function
+    // for the onFileSave prop in CodeEditor
   };
 
   if (loading) {
